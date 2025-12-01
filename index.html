@@ -852,8 +852,14 @@
                         <div class="relative bg-[#0A0A0F] rounded-2xl p-8 text-center h-full border border-white/5 hover:border-brand-accent/50 transition-colors flex flex-col items-center shadow-2xl">
                             <!-- Image Container -->
                             <div class="w-32 h-32 rounded-full p-[2px] bg-gradient-to-br from-brand-accent to-brand-dark mb-6 relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
-                                <div class="w-full h-full rounded-full overflow-hidden bg-brand-dark">
-                                    <img src="image_59b4bd.jpg" alt="CEO" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500">
+                                <div class="w-full h-full rounded-full overflow-hidden bg-brand-dark relative">
+                                    <!-- Foto Utama -->
+                                    <img src="image_59b4bd.jpg" 
+                                         alt="CEO" 
+                                         class="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10"
+                                         onerror="this.onerror=null; this.src='https://randomuser.me/api/portraits/men/3.jpg';">
+                                    <!-- Fallback visual jika loading -->
+                                    <div class="absolute inset-0 bg-gray-800 animate-pulse z-0"></div>
                                 </div>
                             </div>
                             
@@ -871,8 +877,12 @@
                     <div class="group relative">
                         <div class="absolute -inset-[1px] bg-gradient-to-b from-white/20 to-transparent rounded-2xl opacity-20 group-hover:opacity-60 transition-all duration-500"></div>
                         <div class="relative bg-white/[0.02] backdrop-blur-sm rounded-2xl p-6 text-center h-full border border-white/5 hover:bg-white/[0.05] transition-all flex flex-col items-center hover:-translate-y-1">
-                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors">
-                                <img src="image_59b196.jpg" alt="COO" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500">
+                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors relative">
+                                <img src="image_59b196.jpg" 
+                                     alt="COO" 
+                                     class="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10"
+                                     onerror="this.onerror=null; this.src='https://randomuser.me/api/portraits/men/32.jpg';">
+                                <div class="absolute inset-0 bg-gray-800 animate-pulse z-0"></div>
                             </div>
                             <h3 class="text-lg font-bold font-display text-white leading-tight mb-2">Alvin Ridho<br>Ferdiansyah</h3>
                             <p class="text-brand-muted text-xs uppercase tracking-wider font-medium">COO</p>
@@ -883,8 +893,12 @@
                     <div class="group relative">
                         <div class="absolute -inset-[1px] bg-gradient-to-b from-white/20 to-transparent rounded-2xl opacity-20 group-hover:opacity-60 transition-all duration-500"></div>
                         <div class="relative bg-white/[0.02] backdrop-blur-sm rounded-2xl p-6 text-center h-full border border-white/5 hover:bg-white/[0.05] transition-all flex flex-col items-center hover:-translate-y-1">
-                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors">
-                                <img src="image_595ebe.jpg" alt="CTO" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500">
+                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors relative">
+                                <img src="image_595ebe.jpg" 
+                                     alt="CTO" 
+                                     class="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10"
+                                     onerror="this.onerror=null; this.src='https://randomuser.me/api/portraits/men/86.jpg';">
+                                <div class="absolute inset-0 bg-gray-800 animate-pulse z-0"></div>
                             </div>
                             <h3 class="text-lg font-bold font-display text-white leading-tight mb-2">Anzena Shafwan<br>Keano Dranantya</h3>
                             <p class="text-brand-muted text-xs uppercase tracking-wider font-medium">CTO</p>
@@ -895,8 +909,12 @@
                     <div class="group relative">
                         <div class="absolute -inset-[1px] bg-gradient-to-b from-white/20 to-transparent rounded-2xl opacity-20 group-hover:opacity-60 transition-all duration-500"></div>
                         <div class="relative bg-white/[0.02] backdrop-blur-sm rounded-2xl p-6 text-center h-full border border-white/5 hover:bg-white/[0.05] transition-all flex flex-col items-center hover:-translate-y-1">
-                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors">
-                                <img src="image_595342.jpg" alt="CMO" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500">
+                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors relative">
+                                <img src="image_595342.jpg" 
+                                     alt="CMO" 
+                                     class="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10"
+                                     onerror="this.onerror=null; this.src='https://randomuser.me/api/portraits/men/64.jpg';">
+                                <div class="absolute inset-0 bg-gray-800 animate-pulse z-0"></div>
                             </div>
                             <h3 class="text-lg font-bold font-display text-white leading-tight mb-2">Reuben<br>Sebastian Lal</h3>
                             <p class="text-brand-muted text-xs uppercase tracking-wider font-medium">CMO</p>
@@ -907,8 +925,12 @@
                     <div class="group relative">
                         <div class="absolute -inset-[1px] bg-gradient-to-b from-white/20 to-transparent rounded-2xl opacity-20 group-hover:opacity-60 transition-all duration-500"></div>
                         <div class="relative bg-white/[0.02] backdrop-blur-sm rounded-2xl p-6 text-center h-full border border-white/5 hover:bg-white/[0.05] transition-all flex flex-col items-center hover:-translate-y-1">
-                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors">
-                                <img src="image_594ffc.jpg" alt="CFO" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500">
+                            <div class="w-24 h-24 rounded-full mb-4 overflow-hidden border border-white/10 group-hover:border-brand-accent/50 transition-colors relative">
+                                <img src="image_594ffc.jpg" 
+                                     alt="CFO" 
+                                     class="w-full h-full object-cover object-top filter grayscale group-hover:grayscale-0 transition-all duration-500 relative z-10"
+                                     onerror="this.onerror=null; this.src='https://randomuser.me/api/portraits/women/44.jpg';">
+                                <div class="absolute inset-0 bg-gray-800 animate-pulse z-0"></div>
                             </div>
                             <h3 class="text-lg font-bold font-display text-white leading-tight mb-2">Nur<br>Azizah</h3>
                             <p class="text-brand-muted text-xs uppercase tracking-wider font-medium">CFO</p>
