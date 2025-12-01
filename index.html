@@ -130,13 +130,12 @@
             transition: opacity 0.5s ease;
         }
 
-        /* --- MARQUEE STYLES (New) --- */
+        /* --- MARQUEE STYLES --- */
         .marquee-container {
             overflow: hidden;
             width: 100%;
             position: relative;
         }
-        /* Fade edges for smooth look */
         .marquee-container::before,
         .marquee-container::after {
             content: "";
@@ -155,37 +154,28 @@
             right: 0;
             background: linear-gradient(to left, #05050A, transparent);
         }
-
         .marquee-track {
             display: flex;
-            gap: 1.5rem; /* Gap between cards */
+            gap: 1.5rem;
             width: max-content;
         }
-
         .marquee-left {
             animation: scrollLeft 80s linear infinite;
         }
-        
         .marquee-right {
             animation: scrollRight 80s linear infinite;
         }
-
-        /* Pause on hover for readability */
         .marquee-container:hover .marquee-track {
             animation-play-state: paused;
         }
-
         @keyframes scrollLeft {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-
         @keyframes scrollRight {
             0% { transform: translateX(-50%); }
             100% { transform: translateX(0); }
         }
-
-        /* Chat Bubble Style */
         .chat-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -204,14 +194,68 @@
             border-color: rgba(109, 40, 217, 0.4);
             transform: translateY(-2px);
         }
+
+        /* --- AUTH MODAL & ANIMATIONS --- */
+        #login-modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        #login-modal.hidden-modal {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #login-modal.visible-modal {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        
+        /* Slider Animation Logic */
+        .auth-viewport {
+            overflow: hidden;
+            position: relative;
+            /* Adjust height based on content or set fixed if simple */
+            min-height: 420px; 
+            transition: min-height 0.3s ease;
+        }
+        
+        .auth-track {
+            display: flex;
+            width: 200%;
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        
+        .auth-view {
+            width: 50%;
+            padding: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* Active States */
+        .show-login .auth-track {
+            transform: translateX(0%);
+        }
+        .show-login .auth-view.login-view {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .show-register .auth-track {
+            transform: translateX(-50%);
+        }
+        .show-register .auth-view.register-view {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
     </style>
 </head>
 <body class="antialiased selection:bg-brand-accent selection:text-white">
 
-    <!-- Film Grain Overlay -->
     <div class="noise-overlay"></div>
 
-    <!-- Background Ambience -->
     <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div class="glow-spot top-[-200px] left-[-200px] animate-pulse-slow"></div>
         <div class="glow-spot bottom-[-200px] right-[-200px] animate-pulse-slow" style="animation-delay: 2s;"></div>
@@ -224,26 +268,44 @@
                 CLIPZ<span class="text-brand-accent">.</span>
             </a>
             
-            <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-8">
                 <a href="#about" class="text-sm font-medium text-brand-muted hover:text-white transition-colors">Tentang</a>
                 <a href="#services" class="text-sm font-medium text-brand-muted hover:text-white transition-colors">Layanan</a>
                 <a href="#portfolio" class="text-sm font-medium text-brand-muted hover:text-white transition-colors">Portofolio</a>
-                <a href="#" class="px-5 py-2 border border-brand-accent/30 rounded-full text-sm font-medium hover:bg-brand-accent/10 transition-all">Login</a>
+                
+                <!-- Dynamic Login/Profile Button -->
+                <div id="auth-section">
+                    <button id="login-btn" class="px-5 py-2 border border-brand-accent/30 rounded-full text-sm font-medium hover:bg-brand-accent/10 transition-all flex items-center gap-2">
+                        <span>Login</span>
+                        <i data-lucide="log-in" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <!-- User Profile (Hidden by default) -->
+                    <div id="user-profile" class="hidden flex items-center gap-3 bg-brand-surface/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                        <div class="text-right hidden lg:block">
+                            <div class="text-xs font-bold text-white" id="user-name-display">User</div>
+                            <div class="text-[10px] text-brand-accent" id="user-role-display">Member</div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-white/10 p-[1px] overflow-hidden border border-brand-accent/50">
+                            <img src="" id="user-avatar-display" alt="User" class="w-full h-full object-cover rounded-full">
+                        </div>
+                        <button id="logout-btn" class="ml-2 text-brand-muted hover:text-red-500 transition-colors" title="Logout">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Mobile Menu Button -->
             <button id="mobile-menu-btn" class="md:hidden z-50 text-white">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
         </div>
 
-        <!-- Mobile Menu Overlay -->
         <div id="mobile-menu" class="fixed inset-0 bg-brand-dark/95 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-300 flex flex-col justify-center items-center space-y-8">
             <a href="#about" class="text-2xl font-display font-medium mobile-link">Tentang</a>
             <a href="#services" class="text-2xl font-display font-medium mobile-link">Layanan</a>
             <a href="#portfolio" class="text-2xl font-display font-medium mobile-link">Portofolio</a>
-            <a href="#" class="text-xl font-display font-medium text-brand-accent mobile-link">Masuk</a>
+            <button id="mobile-login-btn" class="text-xl font-display font-medium text-brand-accent mobile-link">Masuk</button>
         </div>
     </nav>
 
@@ -286,7 +348,6 @@
                 </div>
             </div>
 
-            <!-- Scroll Indicator -->
             <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce opacity-50 hidden md:block">
                 <i data-lucide="chevron-down" class="w-6 h-6"></i>
             </div>
@@ -309,7 +370,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                    <!-- Value 1 -->
+                    <!-- Value Cards -->
                     <div class="reveal group p-6 md:p-8 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500 rounded-2xl">
                         <div class="w-12 h-12 bg-brand-accent/20 rounded-full flex items-center justify-center text-brand-accent mb-6 group-hover:scale-110 transition-transform">
                             <i data-lucide="repeat" class="w-6 h-6"></i>
@@ -317,8 +378,6 @@
                         <h3 class="text-xl font-bold mb-3">Lebih Konsisten</h3>
                         <p class="text-brand-muted">Jaga ritme upload tanpa burnout. Kami memastikan konten Anda siap tayang sesuai jadwal.</p>
                     </div>
-
-                    <!-- Value 2 -->
                     <div class="reveal group p-6 md:p-8 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500 rounded-2xl delay-100">
                         <div class="w-12 h-12 bg-brand-accent/20 rounded-full flex items-center justify-center text-brand-accent mb-6 group-hover:scale-110 transition-transform">
                             <i data-lucide="zap" class="w-6 h-6"></i>
@@ -326,8 +385,6 @@
                         <h3 class="text-xl font-bold mb-3">Lebih Cepat</h3>
                         <p class="text-brand-muted">Produksi konten mingguan tanpa pusing proses teknis. Kirim mentahan, terima hasil jadi.</p>
                     </div>
-
-                    <!-- Value 3 -->
                     <div class="reveal group p-6 md:p-8 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all duration-500 rounded-2xl delay-200">
                         <div class="w-12 h-12 bg-brand-accent/20 rounded-full flex items-center justify-center text-brand-accent mb-6 group-hover:scale-110 transition-transform">
                             <i data-lucide="award" class="w-6 h-6"></i>
@@ -350,6 +407,7 @@
                 </div>
 
                 <div class="grid md:grid-cols-1 gap-4 md:gap-6 max-w-3xl mx-auto">
+                    <!-- Why items -->
                     <div class="reveal flex items-start gap-6 p-6 rounded-xl hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-brand-accent">
                         <div class="flex-shrink-0 mt-1 text-brand-accent">
                             <i data-lucide="trending-up" class="w-6 h-6"></i>
@@ -359,7 +417,6 @@
                             <p class="text-brand-muted">Platform menyukai kreator yang konsisten. Memproduksi volume tinggi sendirian hampir mustahil tanpa mengorbankan kualitas.</p>
                         </div>
                     </div>
-
                     <div class="reveal flex items-start gap-6 p-6 rounded-xl hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-brand-accent delay-100">
                         <div class="flex-shrink-0 mt-1 text-brand-accent">
                             <i data-lucide="clock" class="w-6 h-6"></i>
@@ -369,7 +426,6 @@
                             <p class="text-brand-muted">Setiap jam yang Anda habiskan di depan timeline editing adalah jam yang hilang untuk meriset ide baru atau berinteraksi dengan audiens.</p>
                         </div>
                     </div>
-
                     <div class="reveal flex items-start gap-6 p-6 rounded-xl hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-brand-accent delay-200">
                         <div class="flex-shrink-0 mt-1 text-brand-accent">
                             <i data-lucide="focus" class="w-6 h-6"></i>
@@ -433,6 +489,73 @@
             </div>
         </section>
 
+        <!-- 4.5 CREATIVE COUNSELING FEATURE (NEW) -->
+        <section class="py-24 px-6 border-y border-white/5 bg-brand-dark relative overflow-hidden">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-1/3 h-full bg-brand-accent/5 skew-x-12 pointer-events-none"></div>
+            
+            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16 relative z-10">
+                <div class="w-full md:w-1/2 reveal">
+                    <div class="relative">
+                        <!-- Chat Bubble Visual -->
+                        <div class="space-y-4">
+                            <!-- Bubble 1 -->
+                            <div class="flex gap-4 items-end">
+                                <div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden flex-shrink-0"><img src="https://ui-avatars.com/api/?name=User&background=333&color=fff" class="w-full h-full"></div>
+                                <div class="bg-white/5 border border-white/10 p-4 rounded-2xl rounded-bl-none max-w-xs">
+                                    <p class="text-sm text-gray-300">Min, videoku kok views-nya stuck di 200 ya? Padahal udah edit jedag-jedug.</p>
+                                </div>
+                            </div>
+                            <!-- Bubble 2 (Reply) -->
+                            <div class="flex gap-4 items-end flex-row-reverse">
+                                <div class="w-10 h-10 rounded-full bg-brand-accent overflow-hidden flex-shrink-0 p-0.5"><img src="https://ui-avatars.com/api/?name=CZ&background=000&color=fff" class="w-full h-full rounded-full"></div>
+                                <div class="bg-brand-accent/20 border border-brand-accent/30 p-4 rounded-2xl rounded-br-none max-w-xs">
+                                    <p class="text-sm text-white">Halo Kak! Tim kami lihat hook di 3 detik awal terlalu lambat. Coba teknik <i>"Visual Breaker"</i> yang kami sarankan di revisi ini ya. 👇</p>
+                                </div>
+                            </div>
+                            <!-- Feedback Card -->
+                            <div class="ml-auto w-fit mr-14 transform rotate-2 hover:rotate-0 transition-transform cursor-pointer">
+                                <div class="bg-[#1A1A24] border border-green-500/30 p-3 rounded-lg flex items-center gap-3 shadow-xl">
+                                    <div class="bg-green-500/20 p-2 rounded-full text-green-400"><i data-lucide="check-circle" class="w-4 h-4"></i></div>
+                                    <div>
+                                        <div class="text-xs text-gray-400">Creative Audit</div>
+                                        <div class="text-sm font-bold text-white">Action Plan: Fix Hook</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/2 reveal delay-100">
+                    <span class="text-brand-accent font-bold tracking-widest text-sm uppercase mb-2 block">Creative Counseling</span>
+                    <h2 class="font-display text-3xl md:text-5xl font-bold mb-6 leading-tight">Bukan Sekedar Editor,<br>Kami <span class="text-brand-glow">Partner Diskusi.</span></h2>
+                    <p class="text-brand-muted text-lg mb-8">
+                        Kami tidak hanya menerima file mentah dan mengeditnya buta. Kami memberikan <strong>Kritik Kreatif</strong> dan <strong>Audit Konten</strong> layaknya Customer Service pribadi untuk channel Anda.
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start gap-3">
+                            <div class="mt-1 bg-brand-accent/20 p-1 rounded text-brand-accent"><i data-lucide="message-square" class="w-4 h-4"></i></div>
+                            <div>
+                                <h4 class="font-bold text-white">Konsultasi Hook & Storytelling</h4>
+                                <p class="text-sm text-brand-muted">Diskusi cara menahan atensi penonton di 3 detik pertama.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <div class="mt-1 bg-brand-accent/20 p-1 rounded text-brand-accent"><i data-lucide="bar-chart-2" class="w-4 h-4"></i></div>
+                            <div>
+                                <h4 class="font-bold text-white">Evaluasi Performa Video</h4>
+                                <p class="text-sm text-brand-muted">Kenapa video kemarin sepi? Kami bantu analisa dari sisi editing.</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <a href="#pricing" class="inline-flex items-center gap-2 text-white border-b border-brand-accent pb-1 hover:text-brand-accent transition-colors">
+                        Lihat Paket dengan Konsultasi <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- 5. SECTION PORTOFOLIO / SHOWCASE -->
         <section id="portfolio" class="py-20 md:py-24 px-6">
             <div class="max-w-7xl mx-auto">
@@ -447,9 +570,9 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
-                    <!-- Portfolio Items (Same as before) -->
+                    <!-- Portfolio Items -->
                     <div class="reveal relative aspect-[9/16] bg-brand-surface rounded-lg overflow-hidden group cursor-pointer video-container shadow-2xl" data-video-id="jrH-HevQ3Ng">
-                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0 play-icon">
                             <div class="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20">
                                 <i data-lucide="play" class="w-5 h-5 text-white fill-white ml-1"></i>
                             </div>
@@ -462,7 +585,7 @@
                     </div>
 
                     <div class="reveal relative aspect-[9/16] bg-brand-surface rounded-lg overflow-hidden group cursor-pointer video-container delay-75 shadow-2xl" data-video-id="8ubjf_r0P-k">
-                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0 play-icon">
                             <div class="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20">
                                 <i data-lucide="play" class="w-5 h-5 text-white fill-white ml-1"></i>
                             </div>
@@ -475,7 +598,7 @@
                     </div>
 
                     <div class="reveal relative aspect-[9/16] bg-brand-surface rounded-lg overflow-hidden group cursor-pointer video-container delay-150 shadow-2xl" data-video-id="N5FhmBTxa90">
-                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0 play-icon">
                             <div class="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20">
                                 <i data-lucide="play" class="w-5 h-5 text-white fill-white ml-1"></i>
                             </div>
@@ -488,7 +611,7 @@
                     </div>
 
                     <div class="reveal relative aspect-[9/16] bg-brand-surface rounded-lg overflow-hidden group cursor-pointer video-container delay-200 shadow-2xl" data-video-id="kirHAfVoH-8">
-                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none transition-opacity duration-300 group-hover:opacity-0 play-icon">
                             <div class="w-12 h-12 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/20">
                                 <i data-lucide="play" class="w-5 h-5 text-white fill-white ml-1"></i>
                             </div>
@@ -503,7 +626,7 @@
             </div>
         </section>
 
-        <!-- 5.5 NEW: TESTIMONIAL MARQUEE SECTION -->
+        <!-- 5.5 TESTIMONIAL MARQUEE SECTION -->
         <section class="py-24 bg-brand-surface/30 overflow-hidden">
             <div class="text-center mb-16 reveal px-6">
                 <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Kata Creator</h2>
@@ -513,297 +636,124 @@
             <!-- ROW 1: Moves LEFT -->
             <div class="marquee-container mb-6">
                 <div class="marquee-track marquee-left">
-                    <!-- Original Set 1 -->
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rizky" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Rizky P.</div><div class="text-xs text-brand-muted">Tech Reviewer</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Gila sih, retention rate naik drastis sejak pake CLIPZ. Editornya paham pacing banget."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Sarah A.</div><div class="text-xs text-brand-muted">Beauty Vlogger</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Workflow jadi super enteng. Tinggal kirim raw file, besoknya udah jadi konten cantik."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="Dimas" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Dimas K.</div><div class="text-xs text-brand-muted">Podcaster</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Gak nyangka bisa secepat ini. Kualitas potongan videonya juara, subtitle presisi."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Mitha" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Mitha L.</div><div class="text-xs text-brand-muted">Business Coach</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Agency rasa in-house editor. Komunikasinya enak dan paham visi brand saya."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Andi" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Andi W.</div><div class="text-xs text-brand-muted">Gamer</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Visual storytelling-nya dapet banget. Suka sama transisi glitch-nya!"</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Tia" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Tia R.</div><div class="text-xs text-brand-muted">Travel Blogger</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Engagement IG Reels meledak 200%. Best investment buat konten kreator."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/15.jpg" alt="Budi" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Budi S.</div><div class="text-xs text-brand-muted">Foodie</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Color grading-nya bikin makanan kelihatan makin enak. Suka banget!"</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/90.jpg" alt="Lina" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Lina P.</div><div class="text-xs text-brand-muted">Educator</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Hemat waktu editing 20 jam/minggu. Sekarang bisa fokus bikin materi."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/24.jpg" alt="Kevin" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Kevin J.</div><div class="text-xs text-brand-muted">Fitness Coach</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Music selection-nya on beat banget. Bikin video workout jadi semangat."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/54.jpg" alt="Fanny" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Fanny</div><div class="text-xs text-brand-muted">Lifestyle</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Revisinya cepet dan on point. Gak perlu ngulang-ngulang brief."</p>
-                    </div>
-
-                    <!-- Duplicate Set 1 for Loop -->
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rizky" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Rizky P.</div><div class="text-xs text-brand-muted">Tech Reviewer</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Gila sih, retention rate naik drastis sejak pake CLIPZ. Editornya paham pacing banget."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Sarah A.</div><div class="text-xs text-brand-muted">Beauty Vlogger</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Workflow jadi super enteng. Tinggal kirim raw file, besoknya udah jadi konten cantik."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="Dimas" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Dimas K.</div><div class="text-xs text-brand-muted">Podcaster</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Gak nyangka bisa secepat ini. Kualitas potongan videonya juara, subtitle presisi."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Mitha" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Mitha L.</div><div class="text-xs text-brand-muted">Business Coach</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Agency rasa in-house editor. Komunikasinya enak dan paham visi brand saya."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Andi" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Andi W.</div><div class="text-xs text-brand-muted">Gamer</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Visual storytelling-nya dapet banget. Suka sama transisi glitch-nya!"</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Tia" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Tia R.</div><div class="text-xs text-brand-muted">Travel Blogger</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Engagement IG Reels meledak 200%. Best investment buat konten kreator."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/15.jpg" alt="Budi" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Budi S.</div><div class="text-xs text-brand-muted">Foodie</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Color grading-nya bikin makanan kelihatan makin enak. Suka banget!"</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/90.jpg" alt="Lina" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Lina P.</div><div class="text-xs text-brand-muted">Educator</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Hemat waktu editing 20 jam/minggu. Sekarang bisa fokus bikin materi."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/24.jpg" alt="Kevin" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Kevin J.</div><div class="text-xs text-brand-muted">Fitness Coach</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Music selection-nya on beat banget. Bikin video workout jadi semangat."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/54.jpg" alt="Fanny" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Fanny</div><div class="text-xs text-brand-muted">Lifestyle</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Revisinya cepet dan on point. Gak perlu ngulang-ngulang brief."</p>
-                    </div>
+                    <!-- Cards -->
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rizky" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Rizky P.</div><div class="text-xs text-brand-muted">Tech Reviewer</div></div></div><p class="text-sm text-gray-300">"Gila sih, retention rate naik drastis sejak pake CLIPZ. Editornya paham pacing banget."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Sarah A.</div><div class="text-xs text-brand-muted">Beauty Vlogger</div></div></div><p class="text-sm text-gray-300">"Workflow jadi super enteng. Tinggal kirim raw file, besoknya udah jadi konten cantik."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/86.jpg" alt="Dimas" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Dimas K.</div><div class="text-xs text-brand-muted">Podcaster</div></div></div><p class="text-sm text-gray-300">"Gak nyangka bisa secepat ini. Kualitas potongan videonya juara, subtitle presisi."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Mitha" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Mitha L.</div><div class="text-xs text-brand-muted">Business Coach</div></div></div><p class="text-sm text-gray-300">"Agency rasa in-house editor. Komunikasinya enak dan paham visi brand saya."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Andi" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Andi W.</div><div class="text-xs text-brand-muted">Gamer</div></div></div><p class="text-sm text-gray-300">"Visual storytelling-nya dapet banget. Suka sama transisi glitch-nya!"</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Tia" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Tia R.</div><div class="text-xs text-brand-muted">Travel Blogger</div></div></div><p class="text-sm text-gray-300">"Engagement IG Reels meledak 200%. Best investment buat konten kreator."</p></div>
+                    
+                    <!-- Loop duplicates -->
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Rizky" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Rizky P.</div><div class="text-xs text-brand-muted">Tech Reviewer</div></div></div><p class="text-sm text-gray-300">"Gila sih, retention rate naik drastis sejak pake CLIPZ. Editornya paham pacing banget."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Sarah A.</div><div class="text-xs text-brand-muted">Beauty Vlogger</div></div></div><p class="text-sm text-gray-300">"Workflow jadi super enteng. Tinggal kirim raw file, besoknya udah jadi konten cantik."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/86.jpg" alt="Dimas" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Dimas K.</div><div class="text-xs text-brand-muted">Podcaster</div></div></div><p class="text-sm text-gray-300">"Gak nyangka bisa secepat ini. Kualitas potongan videonya juara, subtitle presisi."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Mitha" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Mitha L.</div><div class="text-xs text-brand-muted">Business Coach</div></div></div><p class="text-sm text-gray-300">"Agency rasa in-house editor. Komunikasinya enak dan paham visi brand saya."</p></div>
                 </div>
             </div>
 
             <!-- ROW 2: Moves RIGHT -->
             <div class="marquee-container">
                 <div class="marquee-track marquee-right">
-                    <!-- Original Set 2 -->
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Joko" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Joko</div><div class="text-xs text-brand-muted">Entrepreneur</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Style editingnya modern abis. Cocok buat branding personal."</p>
+                     <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Joko" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Joko</div><div class="text-xs text-brand-muted">Entrepreneur</div></div></div><p class="text-sm text-gray-300">"Style editingnya modern abis. Cocok buat branding personal."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Citra" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Citra D.</div><div class="text-xs text-brand-muted">Makeup Artist</div></div></div><p class="text-sm text-gray-300">"Transisinya smooth, gak norak. Suka banget hasil akhirnya."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/71.jpg" alt="Eko" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Eko P.</div><div class="text-xs text-brand-muted">Finance Guru</div></div></div><p class="text-sm text-gray-300">"Worth every penny. Konten edukasi saham jadi lebih fun ditonton."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Yuni" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Yuni S.</div><div class="text-xs text-brand-muted">Mom Vlogger</div></div></div><p class="text-sm text-gray-300">"Timnya responsif parah. Request apapun dicoba diwujudkan."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/43.jpg" alt="Hendra" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Hendra</div><div class="text-xs text-brand-muted">Crypto Analyst</div></div></div><p class="text-sm text-gray-300">"Branding jadi makin kuat karena konsistensi visualnya."</p></div>
+                    
+                    <!-- Loop duplicates -->
+                     <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Joko" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Joko</div><div class="text-xs text-brand-muted">Entrepreneur</div></div></div><p class="text-sm text-gray-300">"Style editingnya modern abis. Cocok buat branding personal."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Citra" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Citra D.</div><div class="text-xs text-brand-muted">Makeup Artist</div></div></div><p class="text-sm text-gray-300">"Transisinya smooth, gak norak. Suka banget hasil akhirnya."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/men/71.jpg" alt="Eko" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Eko P.</div><div class="text-xs text-brand-muted">Finance Guru</div></div></div><p class="text-sm text-gray-300">"Worth every penny. Konten edukasi saham jadi lebih fun ditonton."</p></div>
+                    <div class="chat-card"><div class="flex items-center gap-3"><img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Yuni" class="w-10 h-10 rounded-full object-cover border border-white/20"><div><div class="font-bold text-sm">Yuni S.</div><div class="text-xs text-brand-muted">Mom Vlogger</div></div></div><p class="text-sm text-gray-300">"Timnya responsif parah. Request apapun dicoba diwujudkan."</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5.8 PRICING SECTION (NEW) -->
+        <section id="pricing" class="py-24 px-6 relative">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12 reveal">
+                    <h2 class="font-display text-3xl md:text-5xl font-bold mb-4">Investasi Konten Flexible</h2>
+                    <p class="text-brand-muted max-w-2xl mx-auto">Sistem Credit revolusioner. Tidak ada kuota hangus, gunakan kapan saja sesuai <i>pace</i> produksi Anda.</p>
+                </div>
+
+                <!-- Free Trial Banner -->
+                <div class="reveal relative max-w-3xl mx-auto mb-16 p-1 rounded-2xl bg-gradient-to-r from-brand-accent/50 via-white/20 to-brand-accent/50 animate-pulse-slow">
+                    <div class="bg-brand-surface rounded-xl p-6 text-center border border-white/10 backdrop-blur-md">
+                        <span class="inline-block py-1 px-3 rounded-full bg-brand-accent/20 text-brand-accent text-xs font-bold uppercase tracking-wider mb-2">New User Offer</span>
+                        <h3 class="text-xl font-bold text-white">Ragu untuk mulai? <span class="text-brand-glow">Coba Gratis (500 Credit)</span></h3>
+                        <p class="text-brand-muted text-sm mt-2">Cukup untuk test drive 1-2 video *full editing* tanpa kartu kredit.</p>
                     </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Citra" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Citra D.</div><div class="text-xs text-brand-muted">Makeup Artist</div></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Basic Plan -->
+                    <div class="reveal relative group p-8 rounded-3xl border border-white/10 bg-brand-surface/50 backdrop-blur-sm hover:border-brand-accent/30 transition-all hover:-translate-y-2 flex flex-col">
+                        <div class="mb-auto">
+                            <h3 class="text-xl font-bold mb-2">Creator Starter</h3>
+                            <div class="text-4xl font-display font-bold mb-2">Rp 2.5jt</div>
+                            <div class="flex items-center gap-2 mb-6">
+                                <span class="px-3 py-1 rounded-lg bg-brand-accent/10 text-brand-accent font-bold text-sm border border-brand-accent/20">10.000 Credit</span>
+                                <span class="text-sm text-brand-muted">~25 Video</span>
+                            </div>
+                            <p class="text-sm text-brand-muted mb-8">Pilihan tepat untuk kreator solo yang ingin konsisten upload harian.</p>
+                            
+                            <ul class="space-y-4 mb-8 text-sm text-gray-300">
+                                <li class="flex items-center gap-3"><i data-lucide="zap" class="w-4 h-4 text-brand-accent"></i> <strong>400 Credit</strong> / Video Pendek</li>
+                                <li class="flex items-center gap-3"><i data-lucide="message-circle" class="w-4 h-4 text-brand-accent"></i> <strong>Basic Critique</strong> (via Chat)</li>
+                                <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-brand-muted"></i> Dynamic Captioning</li>
+                                <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-brand-muted"></i> Revisi Ringan (Free)</li>
+                            </ul>
                         </div>
-                        <p class="text-sm text-gray-300">"Transisinya smooth, gak norak. Suka banget hasil akhirnya."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/71.jpg" alt="Eko" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Eko P.</div><div class="text-xs text-brand-muted">Finance Guru</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Worth every penny. Konten edukasi saham jadi lebih fun ditonton."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Yuni" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Yuni S.</div><div class="text-xs text-brand-muted">Mom Vlogger</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Timnya responsif parah. Request apapun dicoba diwujudkan."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/43.jpg" alt="Hendra" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Hendra</div><div class="text-xs text-brand-muted">Crypto Analyst</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Branding jadi makin kuat karena konsistensi visualnya."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Nadia" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Nadia</div><div class="text-xs text-brand-muted">Fashion</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Udah nyoba banyak editor, cuma di sini yang 'klik' sama selera gue."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/91.jpg" alt="Gilang" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Gilang</div><div class="text-xs text-brand-muted">Musician</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Audio mixing-nya juga diperhatiin, gak cuma visual doang. Top!"</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/11.jpg" alt="Oscar" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Oscar</div><div class="text-xs text-brand-muted">Streamer</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Highlights stream gue jadi viral di TikTok gara-gara editing kalian."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/76.jpg" alt="Vina" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Vina</div><div class="text-xs text-brand-muted">DIY Crafts</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Tutorial panjang jadi padat dan jelas. Subscribers suka banget."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/3.jpg" alt="Zaki" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Zaki</div><div class="text-xs text-brand-muted">Startup Founder</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Pitch video buat investor jadi kelihatan profesional banget."</p>
+
+                        <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4">Top Up Starter</button>
                     </div>
 
-                    <!-- Duplicate Set 2 for Loop -->
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="Joko" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Joko</div><div class="text-xs text-brand-muted">Entrepreneur</div></div>
+                    <!-- Pro Plan (Highlighted) -->
+                    <div class="reveal relative group p-8 rounded-3xl border border-brand-accent bg-brand-surface/80 backdrop-blur-md shadow-[0_0_50px_-15px_rgba(109,40,217,0.3)] transition-all hover:-translate-y-2 delay-100 flex flex-col">
+                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-brand-accent text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-lg">Best Value</div>
+                        
+                        <div class="mb-auto">
+                            <h3 class="text-xl font-bold mb-2 text-white">Content Pro</h3>
+                            <div class="text-4xl font-display font-bold mb-2 text-brand-glow">Rp 5jt</div>
+                            <div class="flex items-center gap-2 mb-6">
+                                <span class="px-3 py-1 rounded-lg bg-white text-brand-dark font-bold text-sm border border-white">25.000 Credit</span>
+                                <span class="text-sm text-brand-muted">~65 Video</span>
+                            </div>
+                            <p class="text-sm text-brand-muted mb-8">Bonus credit lebih banyak + konsultasi mendalam.</p>
+                            
+                            <ul class="space-y-4 mb-8 text-sm text-white">
+                                <li class="flex items-center gap-3"><i data-lucide="gift" class="w-4 h-4 text-yellow-400"></i> <strong>Bonus 5.000 Credit</strong> (Included)</li>
+                                <li class="flex items-center gap-3"><i data-lucide="users" class="w-4 h-4 text-brand-accent"></i> <strong>Creative Counseling</strong> (Monthly)</li>
+                                <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-brand-accent"></i> Audit Performa Video</li>
+                                <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-brand-accent"></i> Prioritas Antrian</li>
+                            </ul>
                         </div>
-                        <p class="text-sm text-gray-300">"Style editingnya modern abis. Cocok buat branding personal."</p>
+
+                        <button class="w-full py-3 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-bold transition-all shadow-lg mt-4">Top Up Pro</button>
                     </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Citra" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Citra D.</div><div class="text-xs text-brand-muted">Makeup Artist</div></div>
+
+                    <!-- Agency Plan -->
+                    <div class="reveal relative group p-8 rounded-3xl border border-white/10 bg-brand-surface/50 backdrop-blur-sm hover:border-brand-accent/30 transition-all hover:-translate-y-2 delay-200 flex flex-col">
+                        <div class="mb-auto">
+                            <h3 class="text-xl font-bold mb-2">Business Elite</h3>
+                            <div class="text-4xl font-display font-bold mb-2">Rp 10jt</div>
+                            <div class="flex items-center gap-2 mb-6">
+                                <span class="px-3 py-1 rounded-lg bg-brand-accent/10 text-brand-accent font-bold text-sm border border-brand-accent/20">60.000 Credit</span>
+                                <span class="text-sm text-brand-muted">~150 Video</span>
+                            </div>
+                            <p class="text-sm text-brand-muted mb-8">Solusi skala besar. Full Strategy Support.</p>
+                            
+                            <ul class="space-y-4 mb-8 text-sm text-gray-300">
+                                <li class="flex items-center gap-3"><i data-lucide="trending-up" class="w-4 h-4 text-brand-accent"></i> <strong>Weekly Strategy Call</strong></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-brand-muted"></i> Dedicated Manager</li>
+                                <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-brand-muted"></i> Full Channel Audit</li>
+                                <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-brand-muted"></i> Repurpose Long-form</li>
+                            </ul>
                         </div>
-                        <p class="text-sm text-gray-300">"Transisinya smooth, gak norak. Suka banget hasil akhirnya."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/71.jpg" alt="Eko" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Eko P.</div><div class="text-xs text-brand-muted">Finance Guru</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Worth every penny. Konten edukasi saham jadi lebih fun ditonton."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Yuni" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Yuni S.</div><div class="text-xs text-brand-muted">Mom Vlogger</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Timnya responsif parah. Request apapun dicoba diwujudkan."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/43.jpg" alt="Hendra" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Hendra</div><div class="text-xs text-brand-muted">Crypto Analyst</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Branding jadi makin kuat karena konsistensi visualnya."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Nadia" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Nadia</div><div class="text-xs text-brand-muted">Fashion</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Udah nyoba banyak editor, cuma di sini yang 'klik' sama selera gue."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/91.jpg" alt="Gilang" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Gilang</div><div class="text-xs text-brand-muted">Musician</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Audio mixing-nya juga diperhatiin, gak cuma visual doang. Top!"</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/11.jpg" alt="Oscar" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Oscar</div><div class="text-xs text-brand-muted">Streamer</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Highlights stream gue jadi viral di TikTok gara-gara editing kalian."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/women/76.jpg" alt="Vina" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Vina</div><div class="text-xs text-brand-muted">DIY Crafts</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Tutorial panjang jadi padat dan jelas. Subscribers suka banget."</p>
-                    </div>
-                    <div class="chat-card">
-                        <div class="flex items-center gap-3">
-                            <img src="https://randomuser.me/api/portraits/men/3.jpg" alt="Zaki" class="w-10 h-10 rounded-full object-cover border border-white/20">
-                            <div><div class="font-bold text-sm">Zaki</div><div class="text-xs text-brand-muted">Startup Founder</div></div>
-                        </div>
-                        <p class="text-sm text-gray-300">"Pitch video buat investor jadi kelihatan profesional banget."</p>
+
+                        <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4">Hubungi Kami</button>
                     </div>
                 </div>
             </div>
@@ -960,6 +910,91 @@
 
     </main>
 
+    <!-- AUTH MODAL WITH SLIDER -->
+    <div id="login-modal" class="hidden-modal fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 show-login">
+        <div class="bg-brand-surface border border-white/10 rounded-2xl w-full max-w-md relative shadow-2xl overflow-hidden auth-viewport">
+            
+            <!-- Close Button -->
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-brand-muted hover:text-white transition-colors z-20 bg-brand-dark/50 p-1 rounded-full">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <div class="auth-track">
+                
+                <!-- LOGIN VIEW -->
+                <div class="auth-view login-view">
+                    <div class="text-center mb-8 mt-4">
+                        <h2 class="text-2xl font-display font-bold mb-2">Login ke Dashboard</h2>
+                        <p class="text-sm text-brand-muted">Masuk untuk melihat statistik konten Anda.</p>
+                    </div>
+
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Email Address</label>
+                            <input type="email" id="login-email" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors" placeholder="name@example.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Password</label>
+                            <input type="password" id="login-password" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors" placeholder="••••••••" required>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95 shadow-lg shadow-brand-accent/20">
+                                Masuk
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-6 text-center text-xs text-brand-muted">
+                        Belum punya akun? <button id="switch-to-register" class="text-brand-accent hover:underline font-bold">Daftar Sekarang</button>
+                    </div>
+                </div>
+
+                <!-- REGISTER VIEW -->
+                <div class="auth-view register-view">
+                    <div class="text-center mb-8 mt-4">
+                        <h2 class="text-2xl font-display font-bold mb-2">Buat Akun Baru</h2>
+                        <p class="text-sm text-brand-muted">Bergabung sebagai Member.</p>
+                    </div>
+
+                    <form id="register-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Nama Lengkap</label>
+                            <input type="text" id="reg-name" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors" placeholder="John Doe" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Jenis Kelamin</label>
+                            <select id="reg-gender" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors appearance-none" required>
+                                <option value="" disabled selected>Pilih Gender</option>
+                                <option value="men">Pria</option>
+                                <option value="women">Wanita</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Email Address</label>
+                            <input type="email" id="reg-email" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors" placeholder="name@example.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Password</label>
+                            <input type="password" id="reg-password" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors" placeholder="••••••••" required>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-white text-brand-dark hover:bg-gray-200 font-bold py-3 rounded-lg transition-all transform active:scale-95 shadow-lg">
+                                Daftar Akun
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-6 text-center text-xs text-brand-muted">
+                        Sudah punya akun? <button id="switch-to-login" class="text-brand-accent hover:underline font-bold">Masuk di sini</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
         // Initialize Icons
@@ -1007,9 +1042,8 @@
             }
         });
 
-        // Scroll Reveal Animation (Intersection Observer)
+        // Scroll Reveal Animation
         const revealElements = document.querySelectorAll('.reveal');
-
         const revealCallback = (entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1017,41 +1051,221 @@
                 }
             });
         };
-
-        const revealOptions = {
-            threshold: 0.15,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
+        const revealOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
         const observer = new IntersectionObserver(revealCallback, revealOptions);
+        revealElements.forEach(el => observer.observe(el));
 
-        revealElements.forEach(el => {
-            observer.observe(el);
-        });
-
-        // --- UPDATED VIDEO HOVER LOGIC (With Sound) ---
+        // --- VIDEO HOVER LOGIC ---
         const videoContainers = document.querySelectorAll('.video-container');
-
         videoContainers.forEach(container => {
             const iframe = container.querySelector('iframe');
             const videoId = container.dataset.videoId;
-            
-            // Mouse Enter: Inject URL to iframe with autoplay AND SOUND
             container.addEventListener('mouseenter', () => {
-                // mute=0 tries to play sound.
-                // NOTE: If user has not interacted with the document (click/tap), browser may block autoplay.
                 iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&loop=1&playlist=${videoId}&modestbranding=1&showinfo=0&rel=0`;
                 iframe.style.opacity = '1';
             });
-            
-            // Mouse Leave: Clear URL to stop playback instantly
             container.addEventListener('mouseleave', () => {
                 iframe.style.opacity = '0';
-                // Small delay to let fade out happen before cutting the src
-                setTimeout(() => {
-                     iframe.src = ''; 
-                }, 300);
+                setTimeout(() => { iframe.src = ''; }, 300);
             });
+        });
+
+        /* --- AUTH & DATABASE LOGIC (UPGRADED) --- */
+        
+        // 1. Initial Data (The "Hardcoded" Account)
+        const initialUser = {
+            email: "anzenna.dranantya@binus.ac.id",
+            password: "10042006",
+            name: "Anzenna Dranantya",
+            role: "Premium Member",
+            avatar: "https://ui-avatars.com/api/?name=AD&background=6D28D9&color=fff&size=128"
+        };
+
+        // 2. Database Initialization
+        function initDatabase() {
+            if (!localStorage.getItem('clipz_users')) {
+                localStorage.setItem('clipz_users', JSON.stringify([initialUser]));
+            }
+        }
+        initDatabase();
+
+        // 3. UI References
+        const loginBtn = document.getElementById('login-btn');
+        const mobileLoginBtn = document.getElementById('mobile-login-btn');
+        const modal = document.getElementById('login-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        // Form Switchers (Animation Triggers)
+        const switchToRegisterBtn = document.getElementById('switch-to-register');
+        const switchToLoginBtn = document.getElementById('switch-to-login');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        
+        // Profile Display
+        const userProfile = document.getElementById('user-profile');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userNameDisplay = document.getElementById('user-name-display');
+        const userRoleDisplay = document.getElementById('user-role-display');
+        const userAvatarDisplay = document.getElementById('user-avatar-display');
+
+        // Check Login State
+        function checkLoginState() {
+            const isLoggedIn = localStorage.getItem('clipz_is_logged_in');
+            if (isLoggedIn === 'true') {
+                loginBtn.classList.add('hidden');
+                userProfile.classList.remove('hidden');
+                
+                const storedName = localStorage.getItem('clipz_user_name');
+                const storedRole = localStorage.getItem('clipz_user_role') || "Member";
+                const storedAvatar = localStorage.getItem('clipz_user_avatar');
+
+                if(storedName) userNameDisplay.textContent = storedName.split(' ')[0];
+                if(storedRole) userRoleDisplay.textContent = storedRole;
+                
+                // Color code role
+                if (storedRole === "Premium Member") {
+                    userRoleDisplay.classList.remove('text-brand-muted');
+                    userRoleDisplay.classList.add('text-brand-accent');
+                } else {
+                    userRoleDisplay.classList.add('text-brand-muted');
+                    userRoleDisplay.classList.remove('text-brand-accent');
+                }
+
+                if(storedAvatar) {
+                    userAvatarDisplay.src = storedAvatar;
+                } else {
+                    userAvatarDisplay.src = `https://ui-avatars.com/api/?name=${storedName}&background=333&color=fff`;
+                }
+
+            } else {
+                loginBtn.classList.remove('hidden');
+                userProfile.classList.add('hidden');
+            }
+        }
+        checkLoginState();
+
+        // Modal Open/Close Logic
+        function openModal() {
+            modal.classList.remove('hidden-modal');
+            modal.classList.add('visible-modal');
+            // Reset to login view
+            modal.classList.add('show-login');
+            modal.classList.remove('show-register');
+        }
+
+        function closeModal() {
+            modal.classList.remove('visible-modal');
+            modal.classList.add('hidden-modal');
+        }
+
+        loginBtn.addEventListener('click', openModal);
+        mobileLoginBtn.addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.add('translate-x-full');
+            document.body.style.overflow = 'auto';
+            document.getElementById('mobile-menu-btn').innerHTML = '<i data-lucide="menu" class="w-6 h-6"></i>';
+            lucide.createIcons();
+            openModal();
+        });
+        closeModalBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // 4. ANIMATION LOGIC (Switching Forms)
+        switchToRegisterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.remove('show-login');
+            modal.classList.add('show-register');
+        });
+
+        switchToLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.remove('show-register');
+            modal.classList.add('show-login');
+        });
+
+        // 5. REGISTER LOGIC (With Gender Avatar)
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('reg-name').value.trim();
+            const gender = document.getElementById('reg-gender').value; // 'men' or 'women'
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+
+            if(!gender) {
+                alert("Mohon pilih jenis kelamin.");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+
+            if (users.find(u => u.email === email)) {
+                alert("Email ini sudah terdaftar! Silakan login.");
+                return;
+            }
+
+            // Generate Random Avatar based on Gender
+            const randomId = Math.floor(Math.random() * 90); // 0-90
+            const avatarUrl = `https://randomuser.me/api/portraits/${gender}/${randomId}.jpg`;
+
+            // Save new user (Normal Member)
+            const newUser = { 
+                name, 
+                email, 
+                password,
+                role: "Member", // Normal member
+                avatar: avatarUrl 
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('clipz_users', JSON.stringify(users));
+
+            alert("Pendaftaran Berhasil! Silakan login.");
+            
+            // Slide back to login
+            modal.classList.remove('show-register');
+            modal.classList.add('show-login');
+            
+            // Auto-fill
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').value = "";
+        });
+
+        // 6. LOGIN LOGIC
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const emailInput = document.getElementById('login-email').value.trim();
+            const passwordInput = document.getElementById('login-password').value.trim();
+
+            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+            const foundUser = users.find(u => u.email === emailInput && u.password === passwordInput);
+
+            if (foundUser) {
+                localStorage.setItem('clipz_is_logged_in', 'true');
+                localStorage.setItem('clipz_user_name', foundUser.name);
+                localStorage.setItem('clipz_user_role', foundUser.role || "Member");
+                localStorage.setItem('clipz_user_avatar', foundUser.avatar || "");
+                
+                closeModal();
+                checkLoginState();
+                
+                alert(`Selamat datang kembali, ${foundUser.name}!`);
+            } else {
+                alert("Email atau Password salah!");
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            if(confirm("Yakin ingin keluar?")) {
+                localStorage.removeItem('clipz_is_logged_in');
+                localStorage.removeItem('clipz_user_name');
+                localStorage.removeItem('clipz_user_role');
+                localStorage.removeItem('clipz_user_avatar');
+                checkLoginState();
+            }
         });
 
     </script>
