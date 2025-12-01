@@ -195,16 +195,16 @@
             transform: translateY(-2px);
         }
 
-        /* --- AUTH MODAL & ANIMATIONS --- */
-        #login-modal {
+        /* --- MODAL STYLES --- */
+        .custom-modal {
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        #login-modal.hidden-modal {
+        .custom-modal.hidden-modal {
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
         }
-        #login-modal.visible-modal {
+        .custom-modal.visible-modal {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
@@ -214,7 +214,6 @@
         .auth-viewport {
             overflow: hidden;
             position: relative;
-            /* Adjust height based on content or set fixed if simple */
             min-height: 420px; 
             transition: min-height 0.3s ease;
         }
@@ -250,6 +249,22 @@
             pointer-events: auto;
         }
 
+        /* Dropdown Styles */
+        #profile-dropdown {
+            transform-origin: top right;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out, visibility 0.2s;
+        }
+        #profile-dropdown.hidden-dropdown {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95);
+        }
+        #profile-dropdown.visible-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
     </style>
 </head>
 <body class="antialiased selection:bg-brand-accent selection:text-white">
@@ -274,24 +289,38 @@
                 <a href="#portfolio" class="text-sm font-medium text-brand-muted hover:text-white transition-colors">Portofolio</a>
                 
                 <!-- Dynamic Login/Profile Button -->
-                <div id="auth-section">
+                <div id="auth-section" class="relative">
                     <button id="login-btn" class="px-5 py-2 border border-brand-accent/30 rounded-full text-sm font-medium hover:bg-brand-accent/10 transition-all flex items-center gap-2">
                         <span>Login</span>
                         <i data-lucide="log-in" class="w-4 h-4"></i>
                     </button>
                     
-                    <!-- User Profile (Hidden by default) -->
-                    <div id="user-profile" class="hidden flex items-center gap-3 bg-brand-surface/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                        <div class="text-right hidden lg:block">
-                            <div class="text-xs font-bold text-white" id="user-name-display">User</div>
-                            <div class="text-[10px] text-brand-accent" id="user-role-display">Member</div>
-                        </div>
-                        <div class="w-8 h-8 rounded-full bg-white/10 p-[1px] overflow-hidden border border-brand-accent/50">
-                            <img src="" id="user-avatar-display" alt="User" class="w-full h-full object-cover rounded-full">
-                        </div>
-                        <button id="logout-btn" class="ml-2 text-brand-muted hover:text-red-500 transition-colors" title="Logout">
-                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <!-- User Profile & Dropdown -->
+                    <div id="user-profile-container" class="hidden relative group">
+                        <button id="profile-trigger" class="flex items-center gap-3 bg-brand-surface/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 hover:border-brand-accent/50 transition-all">
+                            <div class="text-right hidden lg:block">
+                                <div class="text-xs font-bold text-white" id="user-name-display">User</div>
+                                <div class="text-[10px] text-brand-accent" id="user-role-display">Member</div>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-white/10 p-[1px] overflow-hidden border border-brand-accent/50">
+                                <img src="" id="user-avatar-display" alt="User" class="w-full h-full object-cover rounded-full">
+                            </div>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-brand-muted"></i>
                         </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profile-dropdown" class="hidden-dropdown absolute right-0 top-full mt-2 w-56 bg-brand-surface border border-white/10 rounded-xl shadow-2xl p-4 z-50 backdrop-blur-xl">
+                            <div class="mb-4 pb-4 border-b border-white/10">
+                                <p class="text-xs text-brand-muted mb-1">Total Credit</p>
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="zap" class="w-5 h-5 text-yellow-400 fill-yellow-400"></i>
+                                    <span class="text-xl font-bold font-display text-white" id="dropdown-credit-display">0</span>
+                                </div>
+                            </div>
+                            <button id="logout-btn" class="w-full flex items-center gap-2 text-sm text-red-400 hover:bg-white/5 p-2 rounded-lg transition-colors">
+                                <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -489,7 +518,7 @@
             </div>
         </section>
 
-        <!-- 4.5 CREATIVE COUNSELING FEATURE (NEW) -->
+        <!-- 4.5 CREATIVE COUNSELING FEATURE -->
         <section class="py-24 px-6 border-y border-white/5 bg-brand-dark relative overflow-hidden">
             <!-- Decorative Elements -->
             <div class="absolute top-0 right-0 w-1/3 h-full bg-brand-accent/5 skew-x-12 pointer-events-none"></div>
@@ -707,7 +736,7 @@
                             </ul>
                         </div>
 
-                        <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4">Top Up Starter</button>
+                        <button id="btn-plan-starter" onclick="openPayment('Starter')" class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4">Top Up Starter</button>
                     </div>
 
                     <!-- Pro Plan (Highlighted) -->
@@ -731,7 +760,7 @@
                             </ul>
                         </div>
 
-                        <button class="w-full py-3 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-bold transition-all shadow-lg mt-4">Top Up Pro</button>
+                        <button id="btn-plan-pro" onclick="openPayment('Pro')" class="w-full py-3 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-bold transition-all shadow-lg mt-4">Top Up Pro</button>
                     </div>
 
                     <!-- Agency Plan -->
@@ -753,7 +782,10 @@
                             </ul>
                         </div>
 
-                        <button class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4">Hubungi Kami</button>
+                        <!-- WHATSAPP INTEGRATION LINK -->
+                        <a href="https://wa.me/6281222250011?text=Halo%20CLIPZ%2C%20saya%20tertarik%20dengan%20paket%20Business%20Elite.%20Bisa%20diskusi%20lebih%20lanjut%3F" target="_blank" class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4 flex items-center justify-center gap-2">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i> Hubungi Kami
+                        </a>
                     </div>
                 </div>
             </div>
@@ -911,23 +943,20 @@
     </main>
 
     <!-- AUTH MODAL WITH SLIDER -->
-    <div id="login-modal" class="hidden-modal fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 show-login">
+    <div id="login-modal" class="custom-modal hidden-modal fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 show-login">
         <div class="bg-brand-surface border border-white/10 rounded-2xl w-full max-w-md relative shadow-2xl overflow-hidden auth-viewport">
-            
             <!-- Close Button -->
             <button id="close-modal-btn" class="absolute top-4 right-4 text-brand-muted hover:text-white transition-colors z-20 bg-brand-dark/50 p-1 rounded-full">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
 
             <div class="auth-track">
-                
                 <!-- LOGIN VIEW -->
                 <div class="auth-view login-view">
                     <div class="text-center mb-8 mt-4">
                         <h2 class="text-2xl font-display font-bold mb-2">Login ke Dashboard</h2>
                         <p class="text-sm text-brand-muted">Masuk untuk melihat statistik konten Anda.</p>
                     </div>
-
                     <form id="login-form" class="space-y-4">
                         <div>
                             <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Email Address</label>
@@ -937,14 +966,12 @@
                             <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Password</label>
                             <input type="password" id="login-password" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors" placeholder="••••••••" required>
                         </div>
-                        
                         <div class="pt-2">
                             <button type="submit" class="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95 shadow-lg shadow-brand-accent/20">
                                 Masuk
                             </button>
                         </div>
                     </form>
-
                     <div class="mt-6 text-center text-xs text-brand-muted">
                         Belum punya akun? <button id="switch-to-register" class="text-brand-accent hover:underline font-bold">Daftar Sekarang</button>
                     </div>
@@ -956,7 +983,6 @@
                         <h2 class="text-2xl font-display font-bold mb-2">Buat Akun Baru</h2>
                         <p class="text-sm text-brand-muted">Bergabung sebagai Member.</p>
                     </div>
-
                     <form id="register-form" class="space-y-4">
                         <div>
                             <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Nama Lengkap</label>
@@ -978,19 +1004,51 @@
                             <label class="block text-xs font-medium text-brand-muted mb-1 ml-1">Password</label>
                             <input type="password" id="reg-password" class="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-accent transition-colors" placeholder="••••••••" required>
                         </div>
-                        
                         <div class="pt-2">
                             <button type="submit" class="w-full bg-white text-brand-dark hover:bg-gray-200 font-bold py-3 rounded-lg transition-all transform active:scale-95 shadow-lg">
                                 Daftar Akun
                             </button>
                         </div>
                     </form>
-
                     <div class="mt-6 text-center text-xs text-brand-muted">
                         Sudah punya akun? <button id="switch-to-login" class="text-brand-accent hover:underline font-bold">Masuk di sini</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- PAYMENT MODAL -->
+    <div id="payment-modal" class="custom-modal hidden-modal fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="bg-brand-surface border border-white/10 rounded-2xl w-full max-w-md relative shadow-2xl p-6">
+            <button id="close-payment-btn" class="absolute top-4 right-4 text-brand-muted hover:text-white transition-colors z-20 bg-brand-dark/50 p-1 rounded-full">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold text-white mb-1">Selesaikan Pembayaran</h3>
+                <p class="text-brand-muted text-sm" id="payment-plan-name">Paket Creator Starter</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 mb-6 flex flex-col items-center">
+                <!-- QR Code Placeholder (Generated) -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=009349637402" alt="QR Code Blu" class="w-40 h-40 mb-4">
+                
+                <div class="text-center text-brand-dark">
+                    <p class="font-bold text-lg">Blu (BCA Digital)</p>
+                    <div class="flex items-center gap-2 justify-center bg-gray-100 px-3 py-1 rounded-full mt-2 cursor-pointer hover:bg-gray-200 transition-colors" onclick="navigator.clipboard.writeText('009349637402')">
+                        <span class="font-mono font-bold text-xl">009349637402</span>
+                        <i data-lucide="copy" class="w-4 h-4 text-gray-500"></i>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">a.n CLIPZ Official</p>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-xs text-center text-brand-muted">Setelah transfer, klik tombol di bawah untuk verifikasi otomatis.</p>
+                <button onclick="confirmPayment()" id="confirm-payment-btn" class="w-full bg-brand-accent hover:bg-brand-accent/90 text-white font-bold py-3 rounded-lg transition-all shadow-lg flex justify-center items-center gap-2">
+                    <span>Saya Sudah Membayar</span>
+                </button>
             </div>
         </div>
     </div>
@@ -1078,7 +1136,8 @@
             password: "10042006",
             name: "Anzenna Dranantya",
             role: "Premium Member",
-            avatar: "https://ui-avatars.com/api/?name=AD&background=6D28D9&color=fff&size=128"
+            avatar: "https://ui-avatars.com/api/?name=AD&background=6D28D9&color=fff&size=128",
+            credits: 500 // Initial bonus credits
         };
 
         // 2. Database Initialization
@@ -1095,60 +1154,134 @@
         const modal = document.getElementById('login-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
         
-        // Form Switchers (Animation Triggers)
         const switchToRegisterBtn = document.getElementById('switch-to-register');
         const switchToLoginBtn = document.getElementById('switch-to-login');
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
         
-        // Profile Display
-        const userProfile = document.getElementById('user-profile');
+        const userProfileContainer = document.getElementById('user-profile-container');
+        const profileTrigger = document.getElementById('profile-trigger');
+        const profileDropdown = document.getElementById('profile-dropdown');
         const logoutBtn = document.getElementById('logout-btn');
+        
         const userNameDisplay = document.getElementById('user-name-display');
         const userRoleDisplay = document.getElementById('user-role-display');
         const userAvatarDisplay = document.getElementById('user-avatar-display');
+        const dropdownCreditDisplay = document.getElementById('dropdown-credit-display');
 
         // Check Login State
         function checkLoginState() {
             const isLoggedIn = localStorage.getItem('clipz_is_logged_in');
             if (isLoggedIn === 'true') {
                 loginBtn.classList.add('hidden');
-                userProfile.classList.remove('hidden');
+                userProfileContainer.classList.remove('hidden');
                 
-                const storedName = localStorage.getItem('clipz_user_name');
-                const storedRole = localStorage.getItem('clipz_user_role') || "Member";
-                const storedAvatar = localStorage.getItem('clipz_user_avatar');
+                const currentEmail = localStorage.getItem('clipz_user_email');
+                const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+                const currentUser = users.find(u => u.email === currentEmail);
 
-                if(storedName) userNameDisplay.textContent = storedName.split(' ')[0];
-                if(storedRole) userRoleDisplay.textContent = storedRole;
-                
-                // Color code role
-                if (storedRole === "Premium Member") {
-                    userRoleDisplay.classList.remove('text-brand-muted');
-                    userRoleDisplay.classList.add('text-brand-accent');
-                } else {
-                    userRoleDisplay.classList.add('text-brand-muted');
-                    userRoleDisplay.classList.remove('text-brand-accent');
-                }
+                if (currentUser) {
+                    const storedName = currentUser.name;
+                    const storedRole = currentUser.role || "Member";
+                    const storedAvatar = currentUser.avatar;
+                    const storedCredits = currentUser.credits || 0;
 
-                if(storedAvatar) {
-                    userAvatarDisplay.src = storedAvatar;
-                } else {
-                    userAvatarDisplay.src = `https://ui-avatars.com/api/?name=${storedName}&background=333&color=fff`;
+                    if(storedName) userNameDisplay.textContent = storedName.split(' ')[0];
+                    if(storedRole) userRoleDisplay.textContent = storedRole;
+                    dropdownCreditDisplay.textContent = storedCredits.toLocaleString();
+                    
+                    if (storedRole.includes("Starter") || storedRole.includes("Pro") || storedRole === "Premium Member") {
+                        userRoleDisplay.classList.remove('text-brand-muted');
+                        userRoleDisplay.classList.add('text-brand-accent');
+                    } else {
+                        userRoleDisplay.classList.add('text-brand-muted');
+                        userRoleDisplay.classList.remove('text-brand-accent');
+                    }
+
+                    if(storedAvatar) {
+                        userAvatarDisplay.src = storedAvatar;
+                    } else {
+                        userAvatarDisplay.src = `https://ui-avatars.com/api/?name=${storedName}&background=333&color=fff`;
+                    }
+
+                    // Update Pricing Buttons based on Role
+                    updatePricingButtons(storedRole);
                 }
 
             } else {
                 loginBtn.classList.remove('hidden');
-                userProfile.classList.add('hidden');
+                userProfileContainer.classList.add('hidden');
+                resetPricingButtons();
             }
         }
+
+        // Toggle Profile Dropdown
+        profileTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden-dropdown');
+            profileDropdown.classList.toggle('visible-dropdown');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userProfileContainer.contains(e.target)) {
+                profileDropdown.classList.remove('visible-dropdown');
+                profileDropdown.classList.add('hidden-dropdown');
+            }
+        });
+
+        // Pricing Button Logic
+        function updatePricingButtons(role) {
+            const starterBtn = document.getElementById('btn-plan-starter');
+            const proBtn = document.getElementById('btn-plan-pro');
+
+            // Reset styles first
+            resetPricingButtons();
+
+            if (role === 'Starter User') {
+                starterBtn.innerText = "Paket Saat Ini";
+                starterBtn.classList.add('bg-white/10', 'text-brand-muted', 'cursor-default');
+                starterBtn.classList.remove('hover:bg-white', 'hover:text-brand-dark');
+                starterBtn.disabled = true;
+                
+                proBtn.innerText = "Upgrade ke Pro";
+            } else if (role === 'Pro User') {
+                proBtn.innerText = "Paket Saat Ini";
+                proBtn.classList.add('bg-brand-accent/50', 'cursor-default');
+                proBtn.classList.remove('hover:bg-brand-accent/90', 'bg-brand-accent');
+                proBtn.disabled = true;
+                
+                starterBtn.innerText = "Top Up Credits";
+            } else if (role === 'Premium Member') {
+                // Admin / Special Role - can buy anything
+                starterBtn.innerText = "Top Up Starter";
+                proBtn.innerText = "Top Up Pro";
+            } else {
+                // Normal Member
+                starterBtn.innerText = "Upgrade ke Starter";
+                proBtn.innerText = "Upgrade ke Pro";
+            }
+        }
+
+        function resetPricingButtons() {
+            const starterBtn = document.getElementById('btn-plan-starter');
+            const proBtn = document.getElementById('btn-plan-pro');
+            
+            starterBtn.innerText = "Top Up Starter";
+            starterBtn.disabled = false;
+            starterBtn.className = "w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4";
+
+            proBtn.innerText = "Top Up Pro";
+            proBtn.disabled = false;
+            proBtn.className = "w-full py-3 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-bold transition-all shadow-lg mt-4";
+        }
+
         checkLoginState();
 
         // Modal Open/Close Logic
         function openModal() {
             modal.classList.remove('hidden-modal');
             modal.classList.add('visible-modal');
-            // Reset to login view
             modal.classList.add('show-login');
             modal.classList.remove('show-register');
         }
@@ -1171,7 +1304,6 @@
             if (e.target === modal) closeModal();
         });
 
-        // 4. ANIMATION LOGIC (Switching Forms)
         switchToRegisterBtn.addEventListener('click', (e) => {
             e.preventDefault();
             modal.classList.remove('show-login');
@@ -1184,19 +1316,16 @@
             modal.classList.add('show-login');
         });
 
-        // 5. REGISTER LOGIC (With Gender Avatar)
+        // 5. REGISTER LOGIC
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
             const name = document.getElementById('reg-name').value.trim();
-            const gender = document.getElementById('reg-gender').value; // 'men' or 'women'
+            const gender = document.getElementById('reg-gender').value;
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value.trim();
 
-            if(!gender) {
-                alert("Mohon pilih jenis kelamin.");
-                return;
-            }
+            if(!gender) { alert("Mohon pilih jenis kelamin."); return; }
 
             const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
 
@@ -1205,29 +1334,24 @@
                 return;
             }
 
-            // Generate Random Avatar based on Gender
-            const randomId = Math.floor(Math.random() * 90); // 0-90
+            const randomId = Math.floor(Math.random() * 90);
             const avatarUrl = `https://randomuser.me/api/portraits/${gender}/${randomId}.jpg`;
 
-            // Save new user (Normal Member)
             const newUser = { 
                 name, 
                 email, 
                 password,
-                role: "Member", // Normal member
-                avatar: avatarUrl 
+                role: "Member",
+                avatar: avatarUrl,
+                credits: 500
             };
             
             users.push(newUser);
             localStorage.setItem('clipz_users', JSON.stringify(users));
 
             alert("Pendaftaran Berhasil! Silakan login.");
-            
-            // Slide back to login
             modal.classList.remove('show-register');
             modal.classList.add('show-login');
-            
-            // Auto-fill
             document.getElementById('login-email').value = email;
             document.getElementById('login-password').value = "";
         });
@@ -1235,7 +1359,6 @@
         // 6. LOGIN LOGIC
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const emailInput = document.getElementById('login-email').value.trim();
             const passwordInput = document.getElementById('login-password').value.trim();
 
@@ -1244,29 +1367,104 @@
 
             if (foundUser) {
                 localStorage.setItem('clipz_is_logged_in', 'true');
-                localStorage.setItem('clipz_user_name', foundUser.name);
-                localStorage.setItem('clipz_user_role', foundUser.role || "Member");
-                localStorage.setItem('clipz_user_avatar', foundUser.avatar || "");
-                
+                localStorage.setItem('clipz_user_email', foundUser.email);
                 closeModal();
                 checkLoginState();
-                
                 alert(`Selamat datang kembali, ${foundUser.name}!`);
             } else {
                 alert("Email atau Password salah!");
             }
         });
 
-        // Logout
+        // Logout Logic (Updated)
         logoutBtn.addEventListener('click', () => {
             if(confirm("Yakin ingin keluar?")) {
+                // 1. Hapus sesi login
                 localStorage.removeItem('clipz_is_logged_in');
-                localStorage.removeItem('clipz_user_name');
-                localStorage.removeItem('clipz_user_role');
-                localStorage.removeItem('clipz_user_avatar');
+                localStorage.removeItem('clipz_user_email');
+                
+                // 2. Update UI Navbar
                 checkLoginState();
+
+                // 3. Sembunyikan dropdown profile
+                profileDropdown.classList.remove('visible-dropdown');
+                profileDropdown.classList.add('hidden-dropdown');
+
+                // 4. Langsung buka Modal Login/Register
+                openModal();
             }
         });
+
+        /* --- PAYMENT SYSTEM SIMULATION --- */
+        const paymentModal = document.getElementById('payment-modal');
+        const closePaymentBtn = document.getElementById('close-payment-btn');
+        let selectedPlan = "";
+        let planCredits = 0;
+
+        function openPayment(planType) {
+            const isLoggedIn = localStorage.getItem('clipz_is_logged_in');
+            if (isLoggedIn !== 'true') {
+                alert("Silakan Login atau Daftar terlebih dahulu untuk membeli paket.");
+                openModal();
+                return;
+            }
+
+            // Check current plan logic (prevent purchasing 'current plan' again if needed, but 'top up' is allowed)
+            const currentEmail = localStorage.getItem('clipz_user_email');
+            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+            const user = users.find(u => u.email === currentEmail);
+            
+            if (user && user.role === `${planType} User`) {
+                // If user wants to top-up same plan, it's fine.
+            }
+
+            selectedPlan = planType;
+            if (planType === 'Starter') planCredits = 10000;
+            if (planType === 'Pro') planCredits = 25000;
+
+            document.getElementById('payment-plan-name').innerText = `Paket ${planType} User (+${planCredits.toLocaleString()} Credits)`;
+            paymentModal.classList.remove('hidden-modal');
+            paymentModal.classList.add('visible-modal');
+        }
+
+        closePaymentBtn.addEventListener('click', () => {
+            paymentModal.classList.remove('visible-modal');
+            paymentModal.classList.add('hidden-modal');
+        });
+
+        async function confirmPayment() {
+            const btn = document.getElementById('confirm-payment-btn');
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Memproses...`;
+            lucide.createIcons();
+
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const currentEmail = localStorage.getItem('clipz_user_email');
+            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+            const userIndex = users.findIndex(u => u.email === currentEmail);
+
+            if (userIndex !== -1) {
+                // Update Role
+                users[userIndex].role = `${selectedPlan} User`;
+                // Add Credits
+                users[userIndex].credits = (users[userIndex].credits || 0) + planCredits;
+                
+                localStorage.setItem('clipz_users', JSON.stringify(users));
+                checkLoginState();
+                
+                alert(`Pembayaran Berhasil! Anda sekarang adalah ${selectedPlan} User. Saldo Credit bertambah +${planCredits}.`);
+                paymentModal.classList.remove('visible-modal');
+                paymentModal.classList.add('hidden-modal');
+            } else {
+                alert("Terjadi kesalahan. User tidak ditemukan.");
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
 
     </script>
 </body>
