@@ -6,6 +6,9 @@
     <title>CLIPZ | Agency Editing & Content Accelerator</title>
     <meta name="description" content="Stop Editing. Start Creating. CLIPZ membantu kreator mengubah konten panjang menjadi short-form berkualitas tinggi.">
     
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -298,7 +301,7 @@
                     <!-- User Profile & Dropdown -->
                     <div id="user-profile-container" class="hidden relative group">
                         <button id="profile-trigger" class="flex items-center gap-3 bg-brand-surface/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 hover:border-brand-accent/50 transition-all">
-                            <!-- Display Name & Rank (Left of Photo) - Fixed Visibility -->
+                            <!-- Display Name & Rank -->
                             <div class="text-right">
                                 <div class="text-xs font-bold text-white" id="user-name-display">User</div>
                                 <div class="text-[10px] text-brand-accent font-medium uppercase tracking-wide" id="user-role-display">Member</div>
@@ -311,7 +314,7 @@
                             <i data-lucide="chevron-down" class="w-4 h-4 text-brand-muted"></i>
                         </button>
 
-                        <!-- Dropdown Menu (Enhanced) -->
+                        <!-- Dropdown Menu -->
                         <div id="profile-dropdown" class="hidden-dropdown absolute right-0 top-full mt-2 w-64 bg-brand-surface border border-white/10 rounded-xl shadow-2xl p-4 z-50 backdrop-blur-xl">
                             <div class="mb-4 pb-4 border-b border-white/10">
                                 <div class="flex justify-between items-start mb-3">
@@ -375,14 +378,15 @@
                 </p>
                 
                 <div class="reveal flex flex-col sm:flex-row items-center justify-center gap-4 mt-8 w-full sm:w-auto">
-                    <a href="#pricing" class="w-full sm:w-auto group relative px-8 py-4 bg-white text-brand-dark font-bold rounded-full overflow-hidden transition-all hover:scale-105 flex justify-center">
+                    <!-- Tombol Updated: Pergi ke Workshop -->
+                    <a href="https://clipzcreatif-create.github.io/ruangedit/" class="w-full sm:w-auto group relative px-8 py-4 bg-white text-brand-dark font-bold rounded-full overflow-hidden transition-all hover:scale-105 flex justify-center">
                         <span class="relative z-10 flex items-center gap-2">
-                            Dapatkan Akses
+                            Pergi ke Workshop
                             <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
                         </span>
                         <div class="absolute inset-0 bg-brand-accent transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 z-0"></div>
                         <span class="absolute inset-0 z-10 flex items-center justify-center gap-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            Dapatkan Akses <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            Pergi ke Workshop <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </span>
                     </a>
                     
@@ -1071,8 +1075,16 @@
     <!-- Scripts -->
     <script>
         // --- 1. CONFIGURATION ---
+        const SUPABASE_URL = "https://vhbpmghohwmajsqenbfx.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoYnBtZ2hvaHdtYWpzcWVuYmZ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ1OTIxOTksImV4cCI6MjA4MDE2ODE5OX0.dKLIWlQZ5x6e-wBBat0A9crzwAS3Zm-3MIzFnaeoijQ";
+        
+        // Initialize Supabase Client
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Initialize Icons
         lucide.createIcons();
 
+        // --- 2. UI HELPERS ---
         // Mobile Menu Logic
         const menuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -1094,7 +1106,6 @@
             }
         });
 
-        // Close mobile menu on link click
         mobileLinks.forEach(link => {
             link.addEventListener('click', () => {
                 isMenuOpen = false;
@@ -1128,7 +1139,7 @@
         const observer = new IntersectionObserver(revealCallback, revealOptions);
         revealElements.forEach(el => observer.observe(el));
 
-        // --- VIDEO HOVER LOGIC ---
+        // --- 3. VIDEO HOVER LOGIC ---
         const videoContainers = document.querySelectorAll('.video-container');
         videoContainers.forEach(container => {
             const iframe = container.querySelector('iframe');
@@ -1143,48 +1154,7 @@
             });
         });
 
-        /* --- AUTH & DATABASE LOGIC (UPGRADED) --- */
-        
-        // 1. Initial Data (The "Hardcoded" Accounts)
-        const initialUsers = [
-            {
-                email: "anzenna.dranantya@binus.ac.id",
-                password: "10042006",
-                name: "Anzenna Dranantya",
-                role: "Premium Member",
-                avatar: "https://ui-avatars.com/api/?name=AD&background=6D28D9&color=fff&size=128",
-                credits: 500
-            },
-            {
-                email: "jokosamsul@gmail.com",
-                password: "123456",
-                name: "Joko Samsul",
-                role: "Business Elite", 
-                avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-                credits: 500 // Updated: Reset to 500 credits
-            }
-        ];
-
-        // 2. Database Initialization (Updated to force update initial users)
-        function initDatabase() {
-            let currentUsers = JSON.parse(localStorage.getItem('clipz_users')) || [];
-            
-            // Merge initialUsers into localStorage
-            initialUsers.forEach(initUser => {
-                const existingIndex = currentUsers.findIndex(u => u.email === initUser.email);
-                if (existingIndex !== -1) {
-                    // Force update data for hardcoded users (so credit changes reflect immediately)
-                    currentUsers[existingIndex] = { ...currentUsers[existingIndex], ...initUser };
-                } else {
-                    currentUsers.push(initUser);
-                }
-            });
-
-            localStorage.setItem('clipz_users', JSON.stringify(currentUsers));
-        }
-        initDatabase();
-
-        // 3. UI References
+        // --- 4. AUTH UI LOGIC ---
         const loginBtn = document.getElementById('login-btn');
         const mobileLoginBtn = document.getElementById('mobile-login-btn');
         const modal = document.getElementById('login-modal');
@@ -1204,121 +1174,6 @@
         const userRoleDisplay = document.getElementById('user-role-display');
         const userAvatarDisplay = document.getElementById('user-avatar-display');
         const dropdownCreditDisplay = document.getElementById('dropdown-credit-display');
-
-        // Check Login State
-        function checkLoginState() {
-            const isLoggedIn = localStorage.getItem('clipz_is_logged_in');
-            if (isLoggedIn === 'true') {
-                loginBtn.classList.add('hidden');
-                userProfileContainer.classList.remove('hidden');
-                
-                const currentEmail = localStorage.getItem('clipz_user_email');
-                const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
-                const currentUser = users.find(u => u.email === currentEmail);
-
-                if (currentUser) {
-                    const storedName = currentUser.name;
-                    const storedRole = currentUser.role || "Member";
-                    const storedAvatar = currentUser.avatar;
-                    const storedCredits = currentUser.credits || 0;
-
-                    if(storedName) userNameDisplay.textContent = storedName.split(' ')[0];
-                    if(storedRole) {
-                        userRoleDisplay.textContent = storedRole;
-                        // Update dropdown role display too
-                        const dropdownRole = document.getElementById('dropdown-role-display');
-                        if(dropdownRole) dropdownRole.textContent = storedRole;
-                    }
-                    dropdownCreditDisplay.textContent = storedCredits.toLocaleString();
-                    
-                    // Color Logic
-                    if (storedRole.includes("Starter") || storedRole.includes("Pro") || storedRole === "Premium Member" || storedRole === "Business Elite") {
-                        userRoleDisplay.classList.remove('text-brand-muted');
-                        userRoleDisplay.classList.add('text-brand-accent');
-                    } else {
-                        userRoleDisplay.classList.add('text-brand-muted');
-                        userRoleDisplay.classList.remove('text-brand-accent');
-                    }
-
-                    if(storedAvatar) {
-                        userAvatarDisplay.src = storedAvatar;
-                    } else {
-                        userAvatarDisplay.src = `https://ui-avatars.com/api/?name=${storedName}&background=333&color=fff`;
-                    }
-
-                    // Update Pricing Buttons based on Role
-                    updatePricingButtons(storedRole);
-                }
-
-            } else {
-                loginBtn.classList.remove('hidden');
-                userProfileContainer.classList.add('hidden');
-                resetPricingButtons();
-            }
-        }
-
-        // Toggle Profile Dropdown
-        profileTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            profileDropdown.classList.toggle('hidden-dropdown');
-            profileDropdown.classList.toggle('visible-dropdown');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!userProfileContainer.contains(e.target)) {
-                profileDropdown.classList.remove('visible-dropdown');
-                profileDropdown.classList.add('hidden-dropdown');
-            }
-        });
-
-        // Pricing Button Logic
-        function updatePricingButtons(role) {
-            const starterBtn = document.getElementById('btn-plan-starter');
-            const proBtn = document.getElementById('btn-plan-pro');
-
-            // Reset styles first
-            resetPricingButtons();
-
-            if (role === 'Starter User') {
-                starterBtn.innerText = "Paket Saat Ini";
-                starterBtn.classList.add('bg-white/10', 'text-brand-muted', 'cursor-default');
-                starterBtn.classList.remove('hover:bg-white', 'hover:text-brand-dark');
-                starterBtn.disabled = true;
-                
-                proBtn.innerText = "Upgrade ke Pro";
-            } else if (role === 'Pro User') {
-                proBtn.innerText = "Paket Saat Ini";
-                proBtn.classList.add('bg-brand-accent/50', 'cursor-default');
-                proBtn.classList.remove('hover:bg-brand-accent/90', 'bg-brand-accent');
-                proBtn.disabled = true;
-                
-                starterBtn.innerText = "Top Up Credits";
-            } else if (role === 'Premium Member') {
-                // Admin / Special Role - can buy anything
-                starterBtn.innerText = "Top Up Starter";
-                proBtn.innerText = "Top Up Pro";
-            } else {
-                // Normal Member
-                starterBtn.innerText = "Upgrade ke Starter";
-                proBtn.innerText = "Upgrade ke Pro";
-            }
-        }
-
-        function resetPricingButtons() {
-            const starterBtn = document.getElementById('btn-plan-starter');
-            const proBtn = document.getElementById('btn-plan-pro');
-            
-            starterBtn.innerText = "Top Up Starter";
-            starterBtn.disabled = false;
-            starterBtn.className = "w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4";
-
-            proBtn.innerText = "Top Up Pro";
-            proBtn.disabled = false;
-            proBtn.className = "w-full py-3 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-bold transition-all shadow-lg mt-4";
-        }
-
-        checkLoginState();
 
         // Modal Open/Close Logic
         function openModal() {
@@ -1358,106 +1213,273 @@
             modal.classList.add('show-login');
         });
 
-        // 5. REGISTER LOGIC
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+        // Dropdown Logic
+        profileTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden-dropdown');
+            profileDropdown.classList.toggle('visible-dropdown');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!userProfileContainer.contains(e.target)) {
+                profileDropdown.classList.remove('visible-dropdown');
+                profileDropdown.classList.add('hidden-dropdown');
+            }
+        });
+
+        // --- 5. HYBRID AUTH INTEGRATION (SUPABASE + LOCAL FALLBACK) ---
+
+        // Helper to sync local storage data
+        function getLocalUserData(email) {
+            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+            return users.find(u => u.email === email);
+        }
+
+        function saveLocalUserData(email, data) {
+            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+            const index = users.findIndex(u => u.email === email);
+            if (index !== -1) {
+                users[index] = { ...users[index], ...data };
+            } else {
+                users.push({ email, ...data });
+            }
+            localStorage.setItem('clipz_users', JSON.stringify(users));
+        }
+
+        // Init Local DB with Default Users
+        function initDatabase() {
+            let currentUsers = JSON.parse(localStorage.getItem('clipz_users')) || [];
+            const initialUsers = [
+                {
+                    email: "anzenna.dranantya@binus.ac.id",
+                    password: "10042006",
+                    name: "Anzenna Dranantya",
+                    role: "Premium Member",
+                    avatar: "https://ui-avatars.com/api/?name=AD&background=6D28D9&color=fff&size=128",
+                    credits: 500
+                },
+                {
+                    email: "jokosamsul@gmail.com",
+                    password: "123456",
+                    name: "Joko Samsul",
+                    role: "Business Elite", 
+                    avatar: "https://randomuser.me/api/portraits/men/11.jpg",
+                    credits: 500
+                }
+            ];
             
-            const name = document.getElementById('reg-name').value.trim();
-            const gender = document.getElementById('reg-gender').value;
+            initialUsers.forEach(initUser => {
+                if (!currentUsers.find(u => u.email === initUser.email)) {
+                    currentUsers.push(initUser);
+                }
+            });
+            localStorage.setItem('clipz_users', JSON.stringify(currentUsers));
+        }
+        initDatabase();
+
+        // Pricing Button UI Update
+        function updatePricingButtons(role) {
+            const starterBtn = document.getElementById('btn-plan-starter');
+            const proBtn = document.getElementById('btn-plan-pro');
+
+            // Reset Default State
+            starterBtn.innerText = "Top Up Starter";
+            starterBtn.disabled = false;
+            starterBtn.className = "w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-brand-dark font-bold transition-all mt-4";
+
+            proBtn.innerText = "Top Up Pro";
+            proBtn.disabled = false;
+            proBtn.className = "w-full py-3 rounded-xl bg-brand-accent hover:bg-brand-accent/90 text-white font-bold transition-all shadow-lg mt-4";
+
+            if (!role) return;
+
+            if (role === 'Starter User') {
+                starterBtn.innerText = "Paket Saat Ini";
+                starterBtn.classList.add('bg-white/10', 'text-brand-muted', 'cursor-default');
+                starterBtn.classList.remove('hover:bg-white', 'hover:text-brand-dark');
+                starterBtn.disabled = true;
+                proBtn.innerText = "Upgrade ke Pro";
+            } else if (role === 'Pro User') {
+                proBtn.innerText = "Paket Saat Ini";
+                proBtn.classList.add('bg-brand-accent/50', 'cursor-default');
+                proBtn.classList.remove('hover:bg-brand-accent/90', 'bg-brand-accent');
+                proBtn.disabled = true;
+                starterBtn.innerText = "Top Up Credits";
+            } else if (role === 'Premium Member') {
+                starterBtn.innerText = "Top Up Starter";
+                proBtn.innerText = "Top Up Pro";
+            } else {
+                // Member
+                starterBtn.innerText = "Upgrade ke Starter";
+                proBtn.innerText = "Upgrade ke Pro";
+            }
+        }
+
+        // --- AUTH STATE MANAGER ---
+        // This function handles UI updates whether login comes from Supabase or Local
+        function updateUIForLogin(email, name, role = "Member", credits = 0, avatar) {
+            loginBtn.classList.add('hidden');
+            userProfileContainer.classList.remove('hidden');
+            
+            userNameDisplay.textContent = name.split(' ')[0];
+            userRoleDisplay.textContent = role;
+            dropdownCreditDisplay.textContent = credits.toLocaleString();
+            
+            // Avatar logic
+            if(avatar) {
+                userAvatarDisplay.src = avatar;
+            } else {
+                userAvatarDisplay.src = `https://ui-avatars.com/api/?name=${name}&background=random&color=fff`;
+            }
+
+            // Role Color logic
+            if (role.includes("Starter") || role.includes("Pro") || role === "Premium Member" || role === "Business Elite") {
+                userRoleDisplay.classList.remove('text-brand-muted');
+                userRoleDisplay.classList.add('text-brand-accent');
+            } else {
+                userRoleDisplay.classList.add('text-brand-muted');
+                userRoleDisplay.classList.remove('text-brand-accent');
+            }
+
+            updatePricingButtons(role);
+            
+            // Persist session state for refresh
+            localStorage.setItem('clipz_is_logged_in', 'true');
+            localStorage.setItem('clipz_user_email', email);
+        }
+
+        function checkLoginState() {
+            const isLoggedIn = localStorage.getItem('clipz_is_logged_in');
+            if (isLoggedIn === 'true') {
+                const currentEmail = localStorage.getItem('clipz_user_email');
+                const userData = getLocalUserData(currentEmail);
+                if (userData) {
+                    updateUIForLogin(userData.email, userData.name, userData.role, userData.credits, userData.avatar);
+                }
+            } else {
+                loginBtn.classList.remove('hidden');
+                userProfileContainer.classList.add('hidden');
+                updatePricingButtons(null);
+            }
+        }
+        
+        // Initial Check
+        checkLoginState();
+
+        // REGISTER
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value.trim();
-
-            if(!gender) { alert("Mohon pilih jenis kelamin."); return; }
-
-            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
-
-            if (users.find(u => u.email === email)) {
-                alert("Email ini sudah terdaftar! Silakan login.");
-                return;
-            }
+            const name = document.getElementById('reg-name').value.trim();
+            const gender = document.getElementById('reg-gender').value;
 
             const randomId = Math.floor(Math.random() * 90);
             const avatarUrl = `https://randomuser.me/api/portraits/${gender}/${randomId}.jpg`;
 
-            const newUser = { 
-                name, 
-                email, 
-                password,
-                role: "Member",
-                avatar: avatarUrl,
-                credits: 500
-            };
-            
-            users.push(newUser);
-            localStorage.setItem('clipz_users', JSON.stringify(users));
+            try {
+                // Try Supabase First
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { name: name } }
+                });
 
-            alert("Pendaftaran Berhasil! Silakan login.");
-            modal.classList.remove('show-register');
-            modal.classList.add('show-login');
-            document.getElementById('login-email').value = email;
-            document.getElementById('login-password').value = "";
-        });
+                if (error) throw error; // Go to catch block if network fails
 
-        // 6. LOGIN LOGIC
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const emailInput = document.getElementById('login-email').value.trim();
-            const passwordInput = document.getElementById('login-password').value.trim();
+                // Success via Supabase
+                saveLocalUserData(email, { name, role: "Member", credits: 500, avatar: avatarUrl });
+                alert("Pendaftaran Berhasil via Supabase!");
+                modal.classList.remove('show-register');
+                modal.classList.add('show-login');
 
-            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
-            const foundUser = users.find(u => u.email === emailInput && u.password === passwordInput);
-
-            if (foundUser) {
-                localStorage.setItem('clipz_is_logged_in', 'true');
-                localStorage.setItem('clipz_user_email', foundUser.email);
-                closeModal();
-                checkLoginState();
-                alert(`Selamat datang kembali, ${foundUser.name}!`);
-            } else {
-                alert("Email atau Password salah!");
+            } catch (err) {
+                console.warn("Supabase Error (Fallback to Local):", err.message);
+                
+                // Fallback to Local Logic
+                const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
+                if (users.find(u => u.email === email)) {
+                    alert("Email ini sudah terdaftar (Local DB)!");
+                    return;
+                }
+                
+                saveLocalUserData(email, { name, email, password, role: "Member", credits: 500, avatar: avatarUrl });
+                alert("Pendaftaran Berhasil (Mode Offline/Demo)!");
+                modal.classList.remove('show-register');
+                modal.classList.add('show-login');
             }
         });
 
-        // Logout Logic (Updated)
-        logoutBtn.addEventListener('click', () => {
+        // LOGIN
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            try {
+                // Try Supabase First
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                
+                if (error) throw error;
+
+                // Success via Supabase
+                let userData = getLocalUserData(email);
+                if (!userData) {
+                    // Sync metadata if local data missing
+                    const userName = data.user.user_metadata.name || email.split('@')[0];
+                    saveLocalUserData(email, { name: userName, role: "Member", credits: 0, avatar: null });
+                    userData = getLocalUserData(email);
+                }
+                updateUIForLogin(userData.email, userData.name, userData.role, userData.credits, userData.avatar);
+                closeModal();
+                alert("Login Sukses via Supabase!");
+
+            } catch (err) {
+                console.warn("Supabase Error (Fallback to Local):", err.message);
+                
+                // Fallback to Local Logic
+                const userData = getLocalUserData(email);
+                if (userData && userData.password === password) {
+                    updateUIForLogin(userData.email, userData.name, userData.role, userData.credits, userData.avatar);
+                    closeModal();
+                    alert(`Login Sukses (Mode Offline/Demo)! Selamat datang ${userData.name}.`);
+                } else {
+                    alert("Login Gagal: Email atau Password salah.");
+                }
+            }
+        });
+
+        // LOGOUT
+        logoutBtn.addEventListener('click', async () => {
             if(confirm("Yakin ingin keluar?")) {
-                // 1. Hapus sesi login
+                try {
+                    await supabaseClient.auth.signOut();
+                } catch(e) { console.log("Local logout only"); }
+                
                 localStorage.removeItem('clipz_is_logged_in');
                 localStorage.removeItem('clipz_user_email');
                 
-                // 2. Update UI Navbar
-                checkLoginState();
-
-                // 3. Sembunyikan dropdown profile
                 profileDropdown.classList.remove('visible-dropdown');
                 profileDropdown.classList.add('hidden-dropdown');
-
-                // 4. Langsung buka Modal Login/Register
-                openModal();
+                
+                checkLoginState(); // Reset UI
+                openModal(); // Re-open login modal
             }
         });
 
-        /* --- PAYMENT SYSTEM SIMULATION --- */
+        /* --- PAYMENT SYSTEM (UPDATED) --- */
         const paymentModal = document.getElementById('payment-modal');
         const closePaymentBtn = document.getElementById('close-payment-btn');
         let selectedPlan = "";
         let planCredits = 0;
 
-        function openPayment(planType) {
+        async function openPayment(planType) {
             const isLoggedIn = localStorage.getItem('clipz_is_logged_in');
+            
             if (isLoggedIn !== 'true') {
-                alert("Silakan Login atau Daftar terlebih dahulu untuk membeli paket.");
+                alert("Silakan Login terlebih dahulu untuk membeli paket.");
                 openModal();
                 return;
-            }
-
-            // Check current plan logic (prevent purchasing 'current plan' again if needed, but 'top up' is allowed)
-            const currentEmail = localStorage.getItem('clipz_user_email');
-            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
-            const user = users.find(u => u.email === currentEmail);
-            
-            if (user && user.role === `${planType} User`) {
-                // If user wants to top-up same plan, it's fine.
             }
 
             selectedPlan = planType;
@@ -1484,24 +1506,23 @@
 
             await new Promise(resolve => setTimeout(resolve, 2000));
 
-            const currentEmail = localStorage.getItem('clipz_user_email');
-            const users = JSON.parse(localStorage.getItem('clipz_users')) || [];
-            const userIndex = users.findIndex(u => u.email === currentEmail);
+            // Get Current User
+            const email = localStorage.getItem('clipz_user_email');
+            let userData = getLocalUserData(email);
+            
+            if (userData) {
+                userData.role = `${selectedPlan} User`;
+                userData.credits = (userData.credits || 0) + planCredits;
+                saveLocalUserData(email, userData);
+                
+                // Update UI immediately
+                updateUIForLogin(userData.email, userData.name, userData.role, userData.credits, userData.avatar);
 
-            if (userIndex !== -1) {
-                // Update Role
-                users[userIndex].role = `${selectedPlan} User`;
-                // Add Credits
-                users[userIndex].credits = (users[userIndex].credits || 0) + planCredits;
-                
-                localStorage.setItem('clipz_users', JSON.stringify(users));
-                checkLoginState();
-                
-                alert(`Pembayaran Berhasil! Anda sekarang adalah ${selectedPlan} User. Saldo Credit bertambah +${planCredits}.`);
+                alert(`Pembayaran Berhasil! Saldo Credit bertambah +${planCredits.toLocaleString()}.`);
                 paymentModal.classList.remove('visible-modal');
                 paymentModal.classList.add('hidden-modal');
             } else {
-                alert("Terjadi kesalahan. User tidak ditemukan.");
+                alert("Sesi error, silakan login ulang.");
             }
 
             btn.disabled = false;
